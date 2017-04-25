@@ -1,0 +1,118 @@
+depot = "/data/actpol/depot"
+source_tods = {
+    # How to get TODs?  This should be a tuple, with the first
+    # argument a string.  Implemented so far:
+    # - ('command_line', )
+    # - ('tod_list', filename, column)
+    'source': ('command_line', ),
+
+    # Use database (MobyFilebase) to search for files if only basename
+    # is provided?
+    'use_database': False,
+
+    # Use TOD cuts to select which detectors should be loaded?
+    'use_cuts': True,
+
+    # Additional arguments to pass to TOD.from_dirfile
+    ## E.g.:
+    ##   {'rows': [0,1,3,4,5], 'cols': [0,1,2,3,4,5], 'block_read':True},
+    ##   {'end': -1000,},
+    ##   {'data_mode': 10},
+    'load_args': {
+        },
+
+    # Downsample factor; None or 1 for no downsampling.
+    'downsample': None,
+}
+
+tod_cuts = {
+    'source': 'depot',
+    'depot': { 'path': '/data/actpol/depot' },
+    'tag': 'actpol1_2013_c7_v5',
+	'structure': 'first5',
+}
+
+
+pointing = {	
+    'detector_offsets': {
+            'format': 'fp_file',
+	    'filename': '/data/actpol/actpol_data_shared/RelativeOffsets/template_ar1_130821s.txt'},
+    'polarization_angle': {
+            'filename': '/data/actpol/actpol_data_shared/PolAngles/polangle_ar1_2013_140408.txt',
+            'columns': [0,3,3],
+            'units': 'degrees',
+            'fail_value': -1.0,
+            },
+    'pointing_shifts': {
+        'source': 'file',
+        'filename': '/data/actpol/actpol_data_shared/TODOffsets/2013_ar1_140122.txt',
+	'columns': [0,3,4],
+	'rescale_degrees': 1/60.,
+        },
+}
+
+time_constants = {
+    # Same semantics as the 'pointing' block
+    'source': 'fp_file',
+    'filename': '/data/actpol/actpol_data_shared/template_ar1_130831u.txt',
+}
+    
+calibration = {
+    'cal_steps': [
+        # Use runfile IV responsivity to start
+        {'name': 'cal',
+         'type': 'depot_cal',
+         'tag': 'actpol1_2013_c7_v5_cal1',
+         'depot': {'path': '/data/actpol/depot'},
+         },
+        ]
+}
+
+output = {
+    'progress_file': 'map.dict',
+    'plot_cm': False,
+    #index of channel to plot, or None to suppress.
+    'tod_plot_det': 25,
+    'maplets': {
+        'zoom': 15./60,
+        }
+}
+#
+# Define some output maps
+#
+maps = [
+    ('source', {
+            # Coordinate system:
+            # 'source_scan' -- centered on source, X parallel to az.
+            # 'source_centered' -- centered on source, X parallel to RA.
+            'coords': 'source_scan',
+            # Map bounds and pixelization
+            'center': (0., 0.),
+            'size': (.5, .5),
+            'pitch': (1.75/360),#3.75/3600
+            # If source coords could be ambiguous, provide them here
+            'source_name': None,
+            # Set to 'IQU' for polarized; 'I' for intensity only.
+            'signal_type': 'I',
+            ##'signal_type': 'IQU',
+            # Starting map?
+            'initial_map': None,
+            # Outputs; per-iter and final
+            'outputs': [
+                {'type': 'write',
+                 'filename': '{name}{_pol_code}.fits',
+                 'iters': 'final',
+                 },
+                {'type': 'write',
+                 'filename': '{name}_little{_pol_code}.fits',
+                 'iters': 'final',
+                 'params': {'extract': ((-.2,.2),(-.2,.2)),}},
+                {'type': 'png',
+                 'filename': '{name}_{iter:02d}.png',
+                 'iters': '*',
+                 'params': {'extract': ((-.1,.1),(-.1,.1)),}},
+                ],
+            }
+)]
+
+outPath = "./test"
