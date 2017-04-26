@@ -54,7 +54,7 @@ pointing = {
 time_constants = {
     # Same semantics as the 'pointing' block
     'source': 'fp_file',
-    'filename': '/data/actpol/actpol_data_shared/template_ar1_130831u.txt',
+    'filename': '/data/actpol/actpol_data_shared/RelativeOffsets/template_ar1_130821s.txt',
 }
     
 calibration = {
