@@ -116,13 +116,18 @@ class Database:
         query = 'select id, name from %sdatafiles' %self._prefix
         datafiles = pd.read_sql(query, self.mysql_cn)
         datafiles['name'] = pd.Series([n.strip('.zip') for n in datafiles.name])
-        self.data = pd.merge(self.data, datafiles,
-                             left_on='datafile_id', right_on='id', how='left')
-        if 'ctime' in self.data.keys():
-            k = 'ctime'
-        elif 'ctime_start' in self.data.keys():
-            k = 'ctime_start'
-        self.data.index = pd.to_datetime(self.data[k], unit='s')
+        if hasattr(self,'data'):
+            self.data = pd.merge(self.data, datafiles,
+                                 left_on='datafile_id', right_on='id', how='left')
+            if 'ctime' in self.data.keys():
+                k = 'ctime'
+            elif 'ctime_start' in self.data.keys():
+                k = 'ctime_start'
+            self.data.index = pd.to_datetime(self.data[k], unit='s')
+
+        if hasattr(self,'tods'):
+            self.tods = pd.merge(self.tods, datafiles,
+                                 left_on='datafile_id', right_on='id', how='left')
 
     def load_tods(self):
         """Load all TODs information"""
@@ -131,6 +136,8 @@ class Database:
         self.tods = self.tods[self.tods.datafile_id.notnull()]
         self.tods.index = pd.to_datetime(self.tods['ctime_start'], unit='s')
         self.tods.length = self.tods['ctime_end'] - self.tods['ctime_start']
+        if not hasattr(self.tods, 'name'):
+            self.load_names()
 
     def load_acqs(self):
         """Load all mce acquisitions information"""
