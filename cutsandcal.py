@@ -1,8 +1,9 @@
 import moby2
 from matplotlib import pyplot as plt
 from moby2.analysis.tod_ana import visual as v
+import numpy as np
 fb = moby2.scripting.get_filebase()
-
+plt.ioff()
 
 
 obs = '1447819012.1447878227.ar2'
@@ -53,14 +54,16 @@ for d in dd[:15]:
 
 # Look at the sample cuts for one live detector
 plt.figure()
-v.plot_with_cuts(tod, ld[0])
+v.plot_with_cuts(tod, ld[0], interactive=False)
 plt.title('%s - d%.4i' %(tod.info.name, ld[0]))
 plt.xlabel('Time [s]')
 
 # Apply the cuts
-moby2.tod.fill_cuts(tod)
 plt.figure()
 plt.plot(tod.ctime-tod.ctime[0],tod.data[ld[0]], 'b', label='Before cuts')
+
+moby2.tod.fill_cuts(tod)
+
 plt.plot(tod.ctime-tod.ctime[0],tod.data[ld[0]], 'g', label='After cuts')
 plt.legend(loc='best', frameon=False)
 
@@ -77,7 +80,7 @@ cal = moby2.scripting.get_calibration(
      'depot': depot_path,
      'tag': tag_cal},
     tod=tod)
-tod[cal.det_uid] *= cal.cal
+tod.data[cal.det_uid] *= cal.cal[:,np.newaxis]
 
 plt.figure()
 plt.plot(tod.ctime-tod.ctime[0], tod.data[ld].T, 'b', alpha=0.1)
@@ -85,3 +88,6 @@ plt.title('%s - Live dets - Calibrated' %(tod.info.name))
 plt.xlabel('Time [s]')
 
 
+
+
+plt.show()
