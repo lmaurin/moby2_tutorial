@@ -52,3 +52,23 @@ db.suffic.array.value_counts()
 
 
 
+# load_tods() and load_acqs() are convenient, but it would better to be able to load
+# from the SQL database only the data we are interested in. This can be done by passing
+# queries to the SQL database.
+
+# First, we initiate the query selecting either tods or acqs
+db.create_query('tods')
+
+# Then we can add conditions
+db.add_condition(('array', '=', 'AR2'))
+db.add_condition(('PWV', '<', '3'))
+db.add_condition(('obs_detail', '=', 'uranus'))
+# We only want array2 observations of uranus when PWV was lower than 3mm
+
+# Now we can make the query to the database
+db.make_query()
+
+# The data will be stored in db.data
+db.data.array.value_counts()
+db.data.obs_detail.value_counts()
+db.data.pwv.hist()

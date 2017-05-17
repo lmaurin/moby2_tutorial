@@ -74,8 +74,8 @@ class Database:
 
         The condition should be expressed as a tuple:
         (crit, cond, val)
-        eg.: (array, =, 'AR1')
-             (ctime_start, >, 1441900000)
+        eg.: ('array', =, 'AR1')
+             ('ctime_start', >, 1441900000)
         """
         if len(self.condition) == 0:
             self.query += " where "
