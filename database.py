@@ -1,24 +1,19 @@
 import MySQLdb
 import pandas as pd
 import moby2
-
+from database_conf import *
 
 
 class Database:
     """Pandas based class for ACTPol database"""
-    host = 'morfeo.astro.puc.cl'
-    port = 3306
-    user = 'act'
-    passwd = 'act!now'
-    db = 'actpol_manifest'
 
     def __init__(self, season=2016):
         self.mysql_cn = MySQLdb.connect(
-            host='morfeo.astro.puc.cl',
-            port=3306,
-            user ='act',
-            passwd='act!now',
-            db='actpol_manifest')
+            host=host,
+            port=port,
+            user = user,
+            passwd= passwd,
+            db=db)
 
         self.season = season
         self.query = None
